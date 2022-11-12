@@ -1,19 +1,41 @@
-import './style.css';
-import Icon from './icon.png';
+import "./style.css";
+import Icon from "./icon.png";
+import { createStore } from "./store";
 
+function component() {
+  const counter = (state = 0, action) => {
+    switch (action.type) {
+      case "INCREMENT":
+        return state + 1;
+      case "DECREMENT":
+        return state - 1;
+      default:
+        return state;
+    }
+  };
 
- function component() {
-   const element = document.createElement('div');
+  let store = createStore(counter);
 
-   element.innerHTML = "<div>hello</div>"
-   element.classList.add('hello');
+  store.subscribe(() => {
+    console.log(store.getState());
+  });
+
+  store.dispatch({ type: "INCREMENT" });
+  store.dispatch({ type: "DECREMENT" });
+  store.dispatch({ type: "INCREMENT" });
+
+  const element = document.createElement("div");
+
+  element.innerHTML = "<div>hello</div>";
+  element.classList.add("hello");
 
   const myIcon = new Image();
+
   myIcon.src = Icon;
 
   element.appendChild(myIcon);
 
-   return element;
- }
+  return element;
+}
 
-document.body.append(component())
+document.body.append(component());
