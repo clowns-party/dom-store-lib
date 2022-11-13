@@ -1,33 +1,14 @@
 import './style.css'
 // @ts-ignore
-import { Component } from './dom/Component'
-import Icon from './icon.png'
+import { DOM } from './dom/DOM'
 import { store } from './store'
+import { App } from './store/Components/App'
 
-type Props = {
-    text: string
-}
+const dom = new DOM()
+dom.render(App().element)
 
-const App = new Component<Props>(
-    'div',
-    (props) => `<div class="app">${props?.text}</div>`,
-    {
-        text: 'hello app!',
-    },
-    () => {}
-)
-
-const image = new Component('img')
-image.element.src = Icon
-
-App.element.appendChild(image.element)
-
-document.body.append(App.element)
-
-store.subscribe(() => {
+const unsubscribe = store.subscribe(() => {
     console.log(store.getState())
+    console.log('update work in main module')
+    dom.render(App().element)
 })
-
-store.dispatch({ type: 'INCREMENT' })
-store.dispatch({ type: 'DECREMENT' })
-store.dispatch({ type: 'INCREMENT' })

@@ -1,19 +1,25 @@
-export const createStore = (reducer, initialState) => {
-  const currentReducer = reducer;
-  let currentState = initialState;
-  let listener = () => {};
+type Listener<S> = (state: S) => void
 
-  return {
-    getState() {
-      return currentState;
-    },
-    dispatch(action) {
-      currentState = currentReducer(currentState, action);
-      listener();
-      return action;
-    },
-    subscribe(newListener) {
-      listener = newListener;
-    },
-  };
-};
+export const createStore = <S>(reducer, initialState: S) => {
+    const currentReducer = reducer
+    let currentState = initialState
+    const listeneres = new Map<Listener<S>, Listener<S>>()
+
+    return {
+        getState() {
+            return currentState
+        },
+        dispatch(action) {
+            currentState = currentReducer(currentState, action)
+            listeneres.forEach((callback) => callback(currentState))
+
+            return action
+        },
+        subscribe(newListener: Listener<S>) {
+            listeneres.set(newListener, newListener)
+            return () => {
+                listeneres.delete(newListener)
+            }
+        },
+    }
+}
